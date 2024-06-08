@@ -1,7 +1,148 @@
-print(3 +21)
+import mysql.connector
+
+
+def connection_create(host_name, user_name, password_user, Dtb):
+    try:
+        connection = mysql.connector.connect(
+        host = host_name,
+        user = user_name,
+        password = password_user,
+        database = Dtb
+        )
+        print('Соединение установлено')
+    except Exception as e:
+        print(f'Произошла ошибка: {type(e)}')
+
+    return connection
+
+connection = connection_create('localhost', 'root', '1928', 'delivery_service')
+
+cursor = connection.cursor()
+
+cursor.execute('Create table products (product_id INT NOT NULL PRIMARY KEY, menu_name VARCHAR(80), price FLOAT)')
+cursor.execute('''INSERT INTO products (product_id, menu_name, price) VALUES
+(1, 'GOJIRA ROLL', 12.6),
+(2, 'VIVA LAS VEGAS ROLL', 15.7),
+(3, 'FUTOMAKI', 14.4),
+(4, 'TOOTSY MAKI', 14.1),
+(5, 'ZONIE ROLL', 15.5),
+(6, 'NUTTY GRILLED SALAD', 10.5),
+(7, 'SASHIMI SALAD', 12),
+(8, 'SUNNY TEA', 3.75),
+(9, 'COFFEE', 4.1),
+(10, 'MINERAL WATER', 2)''')
+
+cursor.execute('create table orders_products (order_id INT NOT NULL, product_id INT NOT NULL, quantity INT, PRIMARY KEY(order_id, product_id))')
+cursor.execute('''INSERT INTO orders_products (order_id, product_id, quantity)
+VALUES (1, 1, 2),
+(1, 4, 1),
+(1, 10, 1),
+(2, 4, 1),
+(2, 5, 1),
+(3, 3, 1),
+(4, 7, 2),
+(5, 2, 1),
+(5, 3, 1),
+(6, 8, 3), (7, 1, 1), (7, 6, 4), (8, 1, 2), (9, 2, 1),
+(9, 3, 1), (10, 1, 2), (10, 2, 1), (11, 3, 2), (12, 5, 2),
+(12, 10, 1), (13, 4, 2), (14, 5, 1), (15, 8, 1), (15, 7, 2)
+''')
+
+cursor.execute('Create table orders (order_id INT NOT NULL PRIMARY KEY, customer_id INT, date_get TIMESTAMP)')
+cursor.execute('''INSERT INTO orders (order_id, customer_id, date_get)
+VALUES (1, 1, '2021-02-26 17:31:42'),
+(2, 2, '2021-02-26 17:33:07'),
+(3, 3, '2021-02-26 17:33:55'),
+(4, 4, '2021-02-26 17:34:13'),
+(5, 5, '2021-02-26 17:34:34'),
+(6, 6, '2021-02-26 17:36:14'),
+(7, 7, '2021-02-26 17:38:00'),
+(8, 8, '2021-02-26 17:38:24'),
+(9, 9, '2021-02-26 17:38:34'),
+(10, 10, '2021-02-26 17:40:21'),
+(11, 11, '2021-02-26 17:41:18'),
+(12, 12, '2021-02-26 17:41:31'),
+(13, 13, '2021-02-26 17:42:07'),
+(14, 14, '2021-02-26 17:43:18'),
+(15, 15, '2021-02-26 17:45:12')
+''')
+
+
+cursor.execute('''Create table customers (customer_id INT NOT NULL PRIMARY KEY, first_name VARCHAR(30),
+last_name VARCHAR(35), phone_number VARCHAR(20), district VARCHAR(15),
+street VARCHAR(25), house INT, apartment INT)''')
+
+cursor.execute('''INSERT INTO customers (customer_id, first_name, last_name,
+phone_number, district, street, house, apartment) VALUES
+(1, 'Penny', 'Smith', '+1 416 572 3771', 'South', 'First Avenue', 1, 10),
+(2, 'Randy', 'Brown', '+1 416 568 8452', 'West', 'Spring St', 2, 35),
+(3, 'Oliver', 'Thompson', '+1 416 782 5648', 'East', 'Five Avenue', 77, 14),
+(4, 'James', 'Twist', '+1 416 752 1224', 'South', 'Corn St', 24, 89),
+(5, 'Hellen', 'Bellora', '+1 416 555 4568', 'South', 'First Avenue', 11, 85),
+(6, 'Kate', 'Evans', '+1 416 321 3211', 'West', 'Spring St', 123, 52),
+(7, 'Jennifer', 'Radriges', '+1 416 321 1232', 'West', 'Roll St', 76, 44),
+(8, 'Mario', 'Gordon', '+1 416 122 4554', 'East', 'Five Avenue', 21, 91),
+(9, 'Bella', 'Lorenson', '+1 416 758 1667', 'North', 'Green Avenue', 23, 67),
+(10, 'Erica', 'Vinsputchu', '+1 416 765 8582', 'South', 'First Avenue', 62, 44),
+(11, 'Henry', 'Smith', '+1 416 657 5528', 'South', 'Brown St', 15, 56),
+(12, 'Oscar', 'Rild', '+1 416 624 3643', 'South', 'First Avenue', 5, 13),
+(13, 'William', 'Frankston', '+1 416 303 8181', 'North', 'Cascade Rd', 18, 88),
+(14, 'Peter', 'Hall', '+1 416 466 7562', 'North', 'Cascade Rd', 17, 17),
+(15, 'Ada', 'Watson', '+1 416 114 7812', 'South', 'Elma St', 18, 9)''')
+
+
+cursor.execute('create table delivery_list (delivery_id INT NOT NULL PRIMARY KEY, order_id INT, courier_id INT, date_arrived TIMESTAMP, taken VARCHAR(3), payment_method VARCHAR(4))')
+cursor.execute('''INSERT INTO delivery_list (delivery_id, order_id, courier_id, date_arrived, taken, payment_method) VALUES
+(1, 1, 3, '2021-02-26 17:59:15', 'Yes', 'Cash'),
+(2, 2, 4,
+'2021-02-26 18:01:05', 'Yes', 'Card'),
+(3, 3, 1, '2021-02-26 18:04:36', 'Yes', 'Cash'),
+(4, 4, 2, '2021-02-26 18:03:11', 'Yes', 'Cash'),
+(5, 5, 1, '2021-02-26 18:19:56', 'Yes', 'Cash'),
+(6, 6, 3, '2021-02-26 18:18:44', 'Yes', 'Card'),
+(7, 7, 2, '2021-02-26 18:50:11', 'No', 'NULL'),
+(8, 8, 4, '2021-02-26 18:35:07', 'Yes', 'Card'),
+(9, 9, 4, '2021-02-26 18:58:28', 'No', 'NULL'),
+(10, 10, 3, '2021-02-26 18:36:51', 'Yes', 'Card'),
+(11, 11, 2, '2021-02-26 19:10:34', 'Yes', 'Cash'),
+(12, 12, 1, NULL, 'No', 'NULL'),
+(13, 13, 2, '2021-02-26 19:17:04', 'Yes', 'Cash'),
+(14, 14, 3, '2021-02-26 18:56:17', 'Yes', 'Card'),
+(15, 15, 4, '2021-02-26 19:05:29', 'Yes', 'Card')''')
+
+
+cursor.execute('''Create table courier_info (courier_id INT NOT NULL PRIMARY KEY, first_name VARCHAR(30),
+last_name VARCHAR(35), phone_number VARCHAR(20), delivery_type
+VARCHAR(5))''')
+
+cursor.execute('''INSERT INTO courier_info (courier_id, first_name, last_name, phone_number, delivery_type)
+VALUES (1, 'John', 'Rython', '+1 408 655 0954', 'foot'),
+(2, 'Kate', 'Looran', '+1 408 743 0146', 'car'),
+(3, 'Bob', 'Kolaris', '+1 408 107 7798', 'car'),
+(4, 'Michael', 'Frontal', '+1 408 566 5516', 'car')''')
+
+
+cursor.execute('ALTER TABLE orders ADD INDEX fk_orders_suctomer_idx (customer_id ASC) VISIBLE')
+
+cursor.execute('ALTER TABLE orders ADD CONSTRAINT fk_orders_customers FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE NO ACTION ON UPDATE NO ACTION')
+
+cursor.execute('ALTER TABLE delivery_list ADD INDEX fk_delivery_list_order_idx (order_id ASC) VISIBLE')
+cursor.execute('Alter Table delivery_list ADD INDEX fk_delivery_list_courier_idx (courier_id ASC) VISIBLE')
+
+cursor.execute('ALTER TABLE delivery_list ADD CONSTRAINT fk_delivery_list_orders FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE NO ACTION ON UPDATE NO ACTION')
+cursor.execute('ALTER TABLE delivery_list ADD CONSTRAINT fk_delivery_list_courier_info FOREIGN KEY (courier_id) REFERENCES courier_info (courier_id) ON DELETE NO ACTION ON UPDATE NO ACTION')
+
+
+cursor.execute('ALTER TABLE orders_products ADD INDEX fk_orders_products_products_idx (order_id ASC) VISIBLE')
+cursor.execute('Alter Table orders_products ADD INDEX fk_orders_products_orders_idx (product_id ASC) VISIBLE')
+
+
+cursor.execute('ALTER TABLE orders_products ADD CONSTRAINT fk_orders_products_products FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE NO ACTION ON UPDATE NO ACTION')
+cursor.execute('ALTER TABLE orders_products ADD CONSTRAINT fk_orders_products_orders FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE NO ACTION ON UPDATE NO ACTION')
 
 
 
+connection.commit()
 
 
 
